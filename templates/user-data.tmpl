@@ -1,0 +1,31 @@
+#cloud-config
+package_update: true
+package_upgrade: true
+
+packages:
+  - curl
+  - docker.io
+  - docker-compose
+
+write_files:
+  - path: /opt/adguardhome/docker-compose.yml
+    owner: root:root
+    permissions: "0644"
+    content: |
+      services:
+        adguardhome:
+          image: adguard/adguardhome
+          container_name: adguardhome
+          restart: unless-stopped
+          network_mode: host
+          volumes:
+            - /opt/adguardhome/work:/opt/adguardhome/work
+            - /opt/adguardhome/conf:/opt/adguardhome/conf
+
+runcmd:
+  - mkdir -p /opt/adguardhome/work /opt/adguardhome/conf
+  - systemctl enable --now docker
+  - curl -fsSL https://tailscale.com/install.sh | sh
+  - systemctl enable --now tailscaled
+  - tailscale up --authkey {{TAILSCALE_AUTH_KEY}}
+  - docker-compose -f /opt/adguardhome/docker-compose.yml up -d
