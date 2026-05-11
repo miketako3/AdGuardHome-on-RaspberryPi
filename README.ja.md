@@ -35,25 +35,28 @@ TAILSCALE_AUTH_KEY=tskey-auth-xxxxxxxxxxxx
 BOOT_DIR=/Volumes/system-boot
 ```
 
-3. `user-data` を生成:
+3. Raspberry Pi Imager で書き込み完了後、SDカードを一度抜き差ししてください。  
+環境によってはブートパーティションが自動再マウントされないため、`/Volumes` 配下の実際のマウント先を確認し、必要なら `BOOT_DIR` を更新します。
+
+4. `user-data` を生成:
 
 ```bash
 make render
 ```
 
-4. ローカル検証テストを実行:
+5. ローカル検証テストを実行:
 
 ```bash
 make test
 ```
 
-5. SDカードのブートパーティションへコピー:
+6. SDカードのブートパーティションへコピー:
 
 ```bash
 make install
 ```
 
-6. Raspberry Pi に SD カードを挿して、電源と LAN を接続して起動。
+7. Raspberry Pi に SD カードを挿して、電源と LAN を接続して起動。
 
 ## 起動後の確認
 
@@ -92,4 +95,5 @@ GitHub Actions で `make test` を自動実行します。
 
 - `ERROR: TAILSCALE_AUTH_KEY is required`: `.env` に `TAILSCALE_AUTH_KEY` を設定してください。
 - `ERROR: BOOT_DIR does not exist`: SDカードのブートパーティションのマウント先と `BOOT_DIR` を確認してください。
+- 書き込み直後に `BOOT_DIR` エラーになる: SDカードを抜き差ししてから、`/Volumes` 配下のマウント先を再確認してください。
 - AdGuard UI にアクセスできない: 初回起動時にネットワーク接続と Docker 起動が完了しているか確認してください。

@@ -35,25 +35,28 @@ TAILSCALE_AUTH_KEY=tskey-auth-xxxxxxxxxxxx
 BOOT_DIR=/Volumes/system-boot
 ```
 
-3. Render `user-data`:
+3. Reinsert the SD card after Raspberry Pi Imager finishes writing.
+Some environments do not remount the boot partition automatically, so verify the actual mount path under `/Volumes` and update `BOOT_DIR` if needed.
+
+4. Render `user-data`:
 
 ```bash
 make render
 ```
 
-4. Run local validation tests:
+5. Run local validation tests:
 
 ```bash
 make test
 ```
 
-5. Copy rendered config to the SD boot partition:
+6. Copy rendered config to the SD boot partition:
 
 ```bash
 make install
 ```
 
-6. Insert SD card into Raspberry Pi, connect power + LAN, and boot.
+7. Insert SD card into Raspberry Pi, connect power + LAN, and boot.
 
 ## Verification After Boot
 
@@ -92,4 +95,5 @@ GitHub Actions runs `make test` on:
 
 - `ERROR: TAILSCALE_AUTH_KEY is required`: set `TAILSCALE_AUTH_KEY` in `.env` or shell environment.
 - `ERROR: BOOT_DIR does not exist`: verify the SD boot partition is mounted and `BOOT_DIR` points to it.
+- `BOOT_DIR` error right after imaging: remove and reinsert the SD card, then re-check the mounted path in `/Volumes`.
 - AdGuard UI not reachable: confirm Raspberry Pi has network connectivity and Docker started correctly on first boot.
