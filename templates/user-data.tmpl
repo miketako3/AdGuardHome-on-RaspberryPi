@@ -1,6 +1,6 @@
 #cloud-config
 package_update: true
-package_upgrade: true
+package_upgrade: false
 
 packages:
   - curl
@@ -29,3 +29,4 @@ runcmd:
   - systemctl enable --now tailscaled
   - tailscale up --authkey {{TAILSCALE_AUTH_KEY}}
   - docker-compose -f /opt/adguardhome/docker-compose.yml up -d
+  - DEBIAN_FRONTEND=noninteractive apt-get -y upgrade

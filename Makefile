@@ -4,6 +4,10 @@ BOOT_DIR ?= /Volumes/system-boot
 BUILD_DIR := build
 TEMPLATE_FILE := templates/user-data.tmpl
 RENDERED_FILE := $(BUILD_DIR)/user-data
+MERGED_FILE := $(BUILD_DIR)/user-data.merged
+MERGE_SCRIPT := scripts/merge_user_data.sh
+BOOT_USER_DATA := $(BOOT_DIR)/user-data
+BOOT_USER_DATA_ORIG := $(BOOT_DIR)/user-data.imager.orig
 
 ifneq (,$(wildcard .env))
 include .env
@@ -23,8 +27,15 @@ render: check-env
 
 install: render
 	@test -d "$(BOOT_DIR)" || (echo "ERROR: BOOT_DIR does not exist: $(BOOT_DIR)" >&2; exit 1)
-	@cp "$(RENDERED_FILE)" "$(BOOT_DIR)/user-data"
-	@echo "Copied $(RENDERED_FILE) -> $(BOOT_DIR)/user-data"
+	@test -f "$(BOOT_USER_DATA)" || (echo "ERROR: $(BOOT_USER_DATA) not found. Write OS image with Raspberry Pi Imager first." >&2; exit 1)
+	@mkdir -p "$(BUILD_DIR)"
+	@if [ ! -f "$(BOOT_USER_DATA_ORIG)" ]; then \
+		cp "$(BOOT_USER_DATA)" "$(BOOT_USER_DATA_ORIG)"; \
+		echo "Saved original Imager user-data: $(BOOT_USER_DATA_ORIG)"; \
+	fi
+	@bash "$(MERGE_SCRIPT)" "$(BOOT_USER_DATA_ORIG)" "$(RENDERED_FILE)" "$(MERGED_FILE)"
+	@cp "$(MERGED_FILE)" "$(BOOT_USER_DATA)"
+	@echo "Merged $(BOOT_USER_DATA_ORIG) + $(RENDERED_FILE) -> $(BOOT_USER_DATA)"
 
 test:
 	@bash tests/test_setup.sh
