@@ -38,7 +38,7 @@ echo "[1/4] Validate required env check"
 cat > "${ENV_FILE}" <<EOF
 BOOT_DIR=${BOOT_DIR}
 EOF
-if (cd "${ROOT_DIR}" && make -s render >/dev/null 2>&1); then
+if (cd "${ROOT_DIR}" && env -u TAILSCALE_AUTH_KEY make -s render >/dev/null 2>&1); then
   fail "render should fail when TAILSCALE_AUTH_KEY is missing"
 fi
 
