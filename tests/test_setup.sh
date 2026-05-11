@@ -40,10 +40,9 @@ fi
 
 required_tokens=(
   "package_update: true"
-  "package_upgrade: false"
-  "docker-compose -f /opt/adguardhome/docker-compose.yml up -d"
+  "package_upgrade: true"
+  "docker compose -f /opt/adguardhome/docker-compose.yml up -d"
   "tailscale up --authkey ${TEST_AUTH_KEY}"
-  "DEBIAN_FRONTEND=noninteractive apt-get -y upgrade"
   "network_mode: host"
   "/opt/adguardhome/work:/opt/adguardhome/work"
   "/opt/adguardhome/conf:/opt/adguardhome/conf"
@@ -53,17 +52,6 @@ for token in "${required_tokens[@]}"; do
     fail "required token missing: ${token}"
   fi
 done
-
-# Ensure provisioning actions run before full OS upgrade to avoid delaying
-# tailscaled/adguard startup behind lengthy first-boot upgrades.
-line_tailscale="$(grep -n "tailscale up --authkey ${TEST_AUTH_KEY}" "${RENDERED_FILE}" | head -n1 | cut -d: -f1)"
-line_compose="$(grep -n "docker-compose -f /opt/adguardhome/docker-compose.yml up -d" "${RENDERED_FILE}" | head -n1 | cut -d: -f1)"
-line_upgrade="$(grep -n "DEBIAN_FRONTEND=noninteractive apt-get -y upgrade" "${RENDERED_FILE}" | head -n1 | cut -d: -f1)"
-
-[[ -n "${line_tailscale}" && -n "${line_compose}" && -n "${line_upgrade}" ]] || fail "unable to evaluate command order in rendered user-data"
-if (( line_upgrade <= line_tailscale || line_upgrade <= line_compose )); then
-  fail "apt upgrade must run after tailscale and docker compose startup"
-fi
 
 echo "[3/4] Validate no duplicate base OS settings in cloud-init"
 for forbidden in '^hostname:' '^users:' 'ssh_authorized_keys' 'ssh_pwauth'; do

@@ -1,11 +1,11 @@
 #cloud-config
 package_update: true
-package_upgrade: false
+package_upgrade: true
 
 packages:
   - curl
   - docker.io
-  - docker-compose
+  - docker-compose-v2
 
 write_files:
   - path: /opt/adguardhome/docker-compose.yml
@@ -28,5 +28,4 @@ runcmd:
   - curl -fsSL https://tailscale.com/install.sh | sh
   - systemctl enable --now tailscaled
   - tailscale up --authkey {{TAILSCALE_AUTH_KEY}}
-  - docker-compose -f /opt/adguardhome/docker-compose.yml up -d
-  - DEBIAN_FRONTEND=noninteractive apt-get -y upgrade
+  - docker compose -f /opt/adguardhome/docker-compose.yml up -d
