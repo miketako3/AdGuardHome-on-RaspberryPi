@@ -17,5 +17,10 @@ jobs:
       - name: Verify Make is available
         run: make --version
 
+      - name: Install htpasswd
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y apache2-utils
+
       - name: Run provisioning tests
         run: make test

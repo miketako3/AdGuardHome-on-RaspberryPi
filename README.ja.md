@@ -32,6 +32,9 @@ cp .env.example .env
 
 ```dotenv
 TAILSCALE_AUTH_KEY=tskey-auth-xxxxxxxxxxxx
+ADGUARD_ADMIN_USER=admin
+ADGUARD_ADMIN_PASSWORD=change-me
+ADGUARD_DNS_BIND_HOST=192.168.1.2
 BOOT_DIR=/Volumes/system-boot
 ```
 
@@ -61,7 +64,7 @@ make install
 ## 起動後の確認
 
 1. Tailscale 管理画面でノードが Online になっていること。
-2. `http://<raspberry-pi-ip>:3000` にアクセスし、AdGuard Home の初期画面が開くこと。
+2. `http://<raspberry-pi-ip>/` にアクセスし、AdGuard Home の管理画面が開くこと。
 
 ## Make ターゲット
 
@@ -96,6 +99,10 @@ GitHub Actions で `make test` を自動実行します。
 ## トラブルシュート
 
 - `ERROR: TAILSCALE_AUTH_KEY is required`: `.env` に `TAILSCALE_AUTH_KEY` を設定してください。
+- `ERROR: ADGUARD_ADMIN_USER is required`: `.env` に `ADGUARD_ADMIN_USER` を設定してください。
+- `ERROR: ADGUARD_ADMIN_PASSWORD is required`: `.env` に `ADGUARD_ADMIN_PASSWORD` を設定してください。
+- `ERROR: ADGUARD_DNS_BIND_HOST is required`: `.env` に `ADGUARD_DNS_BIND_HOST` を設定してください。
+- `ERROR: htpasswd is required`: `apache2-utils`（Linux）または `httpd`（macOS Homebrew）を導入してください。
 - `ERROR: BOOT_DIR does not exist`: SDカードのブートパーティションのマウント先と `BOOT_DIR` を確認してください。
 - `ERROR: /.../user-data not found`: 先に Raspberry Pi Imager でOS書き込みを行い、初期 cloud-init ファイルを作成してください。
 - 書き込み直後に `BOOT_DIR` エラーになる: SDカードを抜き差ししてから、`/Volumes` 配下のマウント先を再確認してください。
